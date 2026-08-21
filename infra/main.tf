@@ -88,6 +88,16 @@ resource "google_service_account_iam_member" "wif_impersonation" {
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository/${var.github_repo}"
 }
 
+# dvc[gs] (gcsfs cu) khong xu ly dung credential kieu external_account co
+# impersonation - gay loi "Gaia id not found". Nen cho WIF principal quyen
+# truc tiep tren bucket, GitHub Actions dung token federated thang, khong
+# impersonate SA nua (auth step trong mlops.yml bo input service_account).
+resource "google_storage_bucket_iam_member" "wif_object_admin" {
+  bucket = google_storage_bucket.mlops.name
+  role   = "roles/storage.objectAdmin"
+  member = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository/${var.github_repo}"
+}
+
 # ---------------------------------------------------------------------------
 # VM for serving (FastAPI on :8000)
 # ---------------------------------------------------------------------------

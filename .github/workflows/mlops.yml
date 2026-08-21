@@ -61,13 +61,13 @@ jobs:
 
       - name: Authenticate to Cloud Storage
         # No JSON key: org policy blocks service account key creation.
-        # Auth via Workload Identity Federation instead - this action mints a
-        # short-lived credential and sets GOOGLE_APPLICATION_CREDENTIALS,
-        # which both `dvc` and the google-cloud-storage SDK pick up automatically.
+        # Auth via Workload Identity Federation, no SA impersonation - dvc[gs]'s
+        # gcsfs is too old to handle impersonated external_account credentials
+        # correctly (fails with "Gaia id not found"). The WIF principal itself
+        # is granted storage.objectAdmin directly on the bucket instead.
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Pull data with DVC
         run: dvc pull data/train_phase1.csv data/eval.csv
