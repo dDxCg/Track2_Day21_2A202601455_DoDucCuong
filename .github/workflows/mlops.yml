@@ -89,7 +89,8 @@ jobs:
           import os
           from google.cloud import storage
 
-          client = storage.Client()
+          # No SA impersonation -> credential has no project baked in, must pass explicitly.
+          client = storage.Client(project="lab21-506202")
           bucket = client.bucket(os.environ["CLOUD_BUCKET"])
           blob = bucket.blob("models/latest/model.pkl")
           blob.upload_from_filename("models/model.pkl")
