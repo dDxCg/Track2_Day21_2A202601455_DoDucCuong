@@ -11,3 +11,8 @@ sa-key.json
 __pycache__/
 *.pyc
 .DS_Store
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/terraform.tfvars
+infra/.terraform.lock.hcl
